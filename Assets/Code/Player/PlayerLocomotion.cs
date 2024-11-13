@@ -1,5 +1,6 @@
-using System;
+using System.Collections;
 using Code.Input;
+using Code.Lanes;
 using UnityEngine;
 
 namespace Code.Player
@@ -14,31 +15,48 @@ namespace Code.Player
         [SerializeField] private Rigidbody2D m_rigidbody;
         [SerializeField] private Collider2D m_collider;
         
+        [SerializeField] private Lane m_currentLane;
+        
         private void OnEnable()
         {
             PlayerInputs.Instance.OnSwipeLeft += PlayerInputs_OnSwipeLeft;
             PlayerInputs.Instance.OnSwipeRight += PlayerInputs_OnSwipeRight;
-        }
-
-        private void FixedUpdate()
-        {
-            
+            LaneManager.Instance.OnLanesInitialized += LaneManager_OnLanesInitialized;
         }
 
         private void OnDisable()
         {
             PlayerInputs.Instance.OnSwipeLeft -= PlayerInputs_OnSwipeLeft;
             PlayerInputs.Instance.OnSwipeRight -= PlayerInputs_OnSwipeRight;
+            LaneManager.Instance.OnLanesInitialized -= LaneManager_OnLanesInitialized;
         }
 
         private void PlayerInputs_OnSwipeLeft()
         {
-            transform.Translate(Vector3.left * 1.5f);
+            m_currentLane = LaneManager.Instance.GetLeftLane(m_currentLane);
+            StartCoroutine(MoveToPosition(m_currentLane.transform.position));
         }
 
         private void PlayerInputs_OnSwipeRight()
         {
-            transform.Translate(Vector3.right * 1.5f);
+            m_currentLane = LaneManager.Instance.GetRightLane(m_currentLane);
+            StartCoroutine(MoveToPosition(m_currentLane.transform.position));
+        }
+
+        private IEnumerator MoveToPosition(Vector3 position)
+        {
+            while (transform.position != position)
+            {
+                transform.position = Vector3.Slerp(transform.position, position, m_moveSpeed * Time.deltaTime);
+                yield return new WaitForEndOfFrame();
+            }
+            
+            transform.position = position;
+        }
+
+        private void LaneManager_OnLanesInitialized()
+        {
+            m_currentLane = LaneManager.Instance.GetLaneFromWorldPosition(transform.position);
         }
     }
 }

@@ -73,12 +73,12 @@ namespace Code.Input
             {
                 m_lastTimeSelectInputReceieved = Time.time;
 
-                if (context.ReadValue<Vector2>().x <= -0.5f && context.ReadValue<Vector2>().y == 0)
+                if (context.ReadValue<Vector2>().x <= -0.5f)
                 {
                     OnSwipeLeft?.Invoke();
                 }
 
-                if (context.ReadValue<Vector2>().x >= 0.5f && context.ReadValue<Vector2>().y == 0)
+                if (context.ReadValue<Vector2>().x >= 0.5f)
                 {
                     OnSwipeRight?.Invoke();
                 }

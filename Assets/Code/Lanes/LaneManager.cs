@@ -14,6 +14,8 @@ namespace Code.Lanes
 
         private void Awake()
         {
+            #region Singleton
+
             if (Instance == null)
             {
                 Instance = this;
@@ -22,6 +24,8 @@ namespace Code.Lanes
             {
                 Destroy(this);
             }
+
+            #endregion
         }
 
         private void Start()
@@ -61,7 +65,9 @@ namespace Code.Lanes
         {
             for (int i = 0; i < Lanes.Length; i++)
             {
-                if (Lanes[i].transform.position == position)
+                Vector3 newPosition = new Vector3(position.x, Lanes[i].transform.position.y, Lanes[i].transform.position.z); 
+                
+                if (Lanes[i].transform.position == newPosition)
                 {
                     return Lanes[i];
                 }
@@ -78,8 +84,6 @@ namespace Code.Lanes
             {
                 Lanes[i] = transform.GetComponentsInChildren<Lane>()[i];
             }
-            
-            Debug.Log("Lanes Initialized");
             
             OnLanesInitialized?.Invoke();
         }

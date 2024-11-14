@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -34,6 +35,11 @@ namespace Code.Vehicles
                     m_red.enabled = false;
                 }
             }
+        }
+
+        private void OnDisable()
+        {
+            StopCoroutine(AlternateLights());
         }
     }
 }

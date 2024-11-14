@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Code.Input;
 using Code.Lanes;
@@ -14,8 +15,9 @@ namespace Code.Player
         [Header("References")]
         [SerializeField] private Rigidbody2D m_rigidbody;
         [SerializeField] private Collider2D m_collider;
-        
         [SerializeField] private Lane m_currentLane;
+
+        public event Action OnChangedLane;
         
         private void OnEnable()
         {
@@ -45,13 +47,17 @@ namespace Code.Player
 
         private IEnumerator MoveToPosition(Vector3 position)
         {
-            while (transform.position != position)
+            Vector3 newPosition = new Vector3(position.x, transform.position.y, transform.position.z); 
+            
+            while (transform.position != newPosition)
             {
-                transform.position = Vector3.Slerp(transform.position, position, m_moveSpeed * Time.deltaTime);
+                transform.position = Vector3.Slerp(transform.position, newPosition, m_moveSpeed * Time.deltaTime);
                 yield return new WaitForEndOfFrame();
             }
             
-            transform.position = position;
+            transform.position = newPosition;
+            
+            OnChangedLane?.Invoke();
         }
 
         private void LaneManager_OnLanesInitialized()
